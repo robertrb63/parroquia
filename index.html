@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Búsqueda</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .search-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .results-container {
+            margin-top: 30px;
+        }
+        .result-card {
+            transition: transform 0.3s;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+        }
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-search me-2"></i>Sistema de Búsqueda
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Iniciar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-4">
+                <h1>Buscador de la Base de Datos</h1>
+                <p class="lead">Encuentre la información que necesita rápidamente</p>
+            </div>
+        </div>
+
+        <!-- Search Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="search-container">
+                    <div class="mb-3">
+                        <input type="text" id="searchInput" class="form-control form-control-lg" 
+                               placeholder="Buscar por nombre, población, unidad, etc..." 
+                               onkeyup="performSearch()">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <select class="form-select" id="filterField">
+                                <option value="all">Todos los campos</option>
+                                <option value="nombre">Nombre</option>
+                                <option value="telefono">Teléfono</option>
+                                <option value="email">Email</option>
+                                <option value="poblacion">Población</option>
+                                <option value="unidad">Unidad</option>
+                                <option value="arciprestazgo">Arciprestazgo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <button class="btn btn-primary w-100" onclick="performSearch()">
+                                <i class="fas fa-search me-2"></i>Buscar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="row results-container" id="resultsSection">
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    Ingrese un término de búsqueda para ver resultados.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Sistema de Búsqueda. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-decoration-none text-secondary me-3">Política de Privacidad</a>
+                    <a href="#" class="text-decoration-none text-secondary">Términos de Servicio</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simulación de base de datos JSON
+        let database = [
+            {
+                id: 1,
+                nombre: "Parroquia San Francisco",
+                telefono: "123456789",
+                email: "sanfrancisco@ejemplo.com",
+                poblacion: "Madrid",
+                unidad: "Parroquia",
+                moderador: "Juan Pérez",
+                telModerador: "987654321",
+                arciprestazgo: "Centro",
+                arcipreste: "Manuel Gómez",
+                telArcipreste: "555123456",
+                laico: "Ana García",
+                telLaico: "555789012"
+            },
+            {
+                id: 2,
+                nombre: "Parroquia Santa María",
+                telefono: "234567890",
+                email: "santamaria@ejemplo.com",
+                poblacion: "Barcelona",
+                unidad: "Parroquia",
+                moderador: "Luisa Martínez",
+                telModerador: "876543210",
+                arciprestazgo: "Norte",
+                arcipreste: "Pedro Sánchez",
+                telArcipreste: "555234567",
+                laico: "Carlos Rodríguez",
+                telLaico: "555890123"
+            },
+            {
+                id: 3,
+                nombre: "Centro Pastoral San Juan",
+                telefono: "345678901",
+                email: "sanjuan@ejemplo.com",
+                poblacion: "Valencia",
+                unidad: "Centro Pastoral",
+                moderador: "Elena Fernández",
+                telModerador: "765432109",
+                arciprestazgo: "Este",
+                arcipreste: "Antonio López",
+                telArcipreste: "555345678",
+                laico: "Laura Díaz",
+                telLaico: "555901234"
+            }
+        ];
+
+        // Función para realizar la búsqueda
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filterField = document.getElementById('filterField').value;
+            const resultsSection = document.getElementById('resultsSection');
+            
+            if (searchTerm.length === 0) {
+                resultsSection.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info" role="alert">
+                            Ingrese un término de búsqueda para ver resultados.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let results = [];
+            
+            if (filterField === 'all') {
+                results = database.filter(item => {
+                    return Object.values(item).some(value => 
+                        String(value).toLowerCase().includes(searchTerm)
+                    );
+                });
+            } else {
+                results = database.filter(item => 
+                    String(item[filterField]).toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            displayResults(results);
+        }
+        
+        // Función para mostrar los resultados
+        function displayResults(results) {
+            const resultsSection = document.getElementById('resultsSection');
+            
+            if (results.length === 0) {
+                resultsSection.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-warning" role="alert">
+                            No se encontraron resultados que coincidan con su búsqueda.
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            results.forEach(item => {
+                html += `
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card result-card h-100">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">${item.nombre}</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Población:</strong> ${item.poblacion}</p>
+                                <p><strong>Unidad:</strong> ${item.unidad}</p>
+                                <p><strong>Teléfono:</strong> ${item.telefono}</p>
+                                <p><strong>Email:</strong> ${item.email}</p>
+                                <p><strong>Arciprestazgo:</strong> ${item.arciprestazgo}</p>
+                            </div>
+                            <div class="card-footer bg-light">
+                                <button class="btn btn-sm btn-outline-primary" onclick="showDetails(${item.id})">
+                                    Ver detalles completos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsSection.innerHTML = html;
+        }
+        
+        // Función para mostrar detalles completos
+        function showDetails(id) {
+            const item = database.find(item => item.id === id);
+            
+            if (!item) return;
+            
+            // En una aplicación real, esto abriría un modal o redirigiría a una página de detalles
+            alert(`
+                Detalles completos para: ${item.nombre}
+                
+                Unidad: ${item.unidad}
+                Población: ${item.poblacion}
+                Teléfono: ${item.telefono}
+                Email: ${item.email}
+                
+                Moderador: ${item.moderador}
+                Teléfono Moderador: ${item.telModerador}
+                
+                Arciprestazgo: ${item.arciprestazgo}
+                Arcipreste: ${item.arcipreste}
+                Teléfono Arcipreste: ${item.telArcipreste}
+                
+                Laico: ${item.laico}
+                Teléfono Laico: ${item.telLaico}
+            `);
+        }
+    </script>
+</body>
+</html>

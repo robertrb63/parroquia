@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Sistema de Búsqueda</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .sidebar {
+            min-height: calc(100vh - 56px);
+            background-color: #343a40;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.75);
+            padding: 16px 20px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link.active, .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .sidebar .nav-link i {
+            margin-right: 10px;
+        }
+        .admin-content {
+            padding: 30px;
+        }
+        .admin-header {
+            background-color: #f1f1f1;
+            padding: 15px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .action-buttons .btn {
+            margin-right: 5px;
+        }
+        .table-hover tbody tr {
+            cursor: pointer;
+        }
+        .form-control-search {
+            border-radius: 20px;
+        }
+        #contentArea {
+            min-height: 500px;
+        }
+        .modal-header {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Verificación de autenticación -->
+    <script>
+        if (!sessionStorage.getItem('isLoggedIn')) {
+            // Si no está autenticado, redirigir al login
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="admin.html">
+                <i class="fas fa-cogs me-2"></i>Panel de Administración
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarAdmin">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarAdmin">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i><span id="usernameDisplay">Admin</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Configuración</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block sidebar collapse" id="sidebarMenu">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" onclick="showDashboard()">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showDataTable()">
+                                <i class="fas fa-table"></i>
+                                Gestionar Datos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showAddForm()">
+                                <i class="fas fa-plus-circle"></i>
+                                Agregar Registro
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showUsers()">
+                                <i class="fas fa-users"></i>
+                                Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showSettings()">
+                                <i class="fas fa-cog"></i>
+                                Configuración
+                            </a>
+                        </li>
+                        <li class="nav-item mt-5">
+                            <a class="nav-link" href="index.html">
+                                <i class="fas fa-search"></i>
+                                Ver Búsqueda
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Cerrar Sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div id="contentArea" class="admin-content">
+                    <!-- El contenido se cargará dinámicamente aquí -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Editar/Agregar Registro -->
+    <div class="modal fade" id="recordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Editar Registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="recordForm">
+                        <input type="hidden" id="recordId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="unidad" class="form-label">Unidad</label>
+                                <input type="text" class="form-control" id="unidad" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="poblacion" class="form-label">Población</label>
+                            <input type="text" class="form-control" id="poblacion">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="moderador" class="form-label">Moderador</label>
+                                <input type="text" class="form-control" id="moderador">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="telModerador" class="form-label">Teléfono Moderador</label>
+                                <input type="tel" class="form-control" id="telModerador">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="arciprestazgo" class="form-label">Arciprestazgo</label>
+                                <input type="text" class="form-control" id="arciprestazgo">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="arcipreste" class="form-label">Arcipreste</label>
+                                <input type="text" class="form-control" id="arcipreste">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="telArcipreste" class="form-label">Teléfono Arcipreste</label>
+                                <input type="tel" class="form-control" id="telArcipreste">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="laico" class="form-label">Laico</label>
+                                <input type="text" class="form-control" id="laico">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="telLaico" class="form-label">Teléfono Laico</label>
+                                <input type="tel" class="form-control" id="telLaico">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="saveButton" onclick="saveRecord()">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación para Eliminar -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">

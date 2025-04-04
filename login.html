@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sistema de Búsqueda</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .login-container {
+            max-width: 450px;
+            margin: auto;
+            padding: 40px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 80px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header i {
+            font-size: 48px;
+            color: #0d6efd;
+            margin-bottom: 15px;
+        }
+        .form-control {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+        .btn-login {
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 8px;
+        }
+        .footer {
+            margin-top: auto;
+            padding: 20px 0;
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-search me-2"></i>Sistema de Búsqueda
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="login.html">Iniciar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="container">
+        <div class="login-container">
+            <div class="login-header">
+                <i class="fas fa-user-lock"></i>
+                <h2>Iniciar Sesión</h2>
+                <p class="text-muted">Acceda al panel de administración</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="username" class="form-label">Usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" class="form-control" id="username" placeholder="Ingrese su usuario" required>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input type="password" class="form-control" id="password" placeholder="Ingrese su contraseña" required>
+                    </div>
+                </div>
+                <div class="mb-4 form-check">
+                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                    <label class="form-check-label" for="rememberMe">Recordar mis datos</label>
+                </div>
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary btn-login" onclick="attemptLogin()">
+                        <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                    </button>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="#" class="text-decoration-none">¿Olvidó su contraseña?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 Sistema de Búsqueda. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-decoration-none text-secondary me-3">Política de Privacidad</a>
+                    <a href="#" class="text-decoration-none text-secondary">Términos de Servicio</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Datos de usuario para simulación
+        const adminUser = {
+            username: "admin",
+            password: "admin123"
+        };
+
+        // Función para intentar el inicio de sesión
+        function attemptLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username === adminUser.username && password === adminUser.password) {
+                // Guardar en sessionStorage para mantener la sesión
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('username', username);
+                
+                // Redireccionar al panel de administración
+                window.location.href = 'admin.html';
+            } else {
+                alert('Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.');
+            }
+        }
+
+        // Permitir enviar con Enter
+        document.getElementById('password').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                attemptLogin();
+            }
+        });
+    </script>
+</body>
+</html>

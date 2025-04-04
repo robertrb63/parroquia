@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Gestión de Datos</title>
+<style>
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+background-color: #f5f5f5;
+color: #333;
+line-height: 1.6;
+}
+.container {
+width: 100%;
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+}
+header {
+background-color: #3498db;
+color: white;
+padding: 20px 0;
+text-align: center;
+margin-bottom: 30px;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+nav {
+display: flex;
+justify-content: space-between;
+padding: 0 20px;
+margin-bottom: 20px;
+}
+nav a {
+color: #3498db;
+text-decoration: none;
+font-weight: bold;
+transition: color 0.3s;
+}
+nav a:hover {
+color: #2980b9;
+}
+.search-section {
+background: white;
+padding: 20px;
+border-radius: 5px;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+margin-bottom: 30px;
+}
+.search-box {
+display: flex;
+margin-bottom: 20px;
+}
+.search-box input {
+flex: 1;
+padding: 10px;
+border: 1px solid #ddd;
+border-radius: 4px 0 0 4px;
+font-size: 16px;
+}
+.search-box button {
+padding: 10px 20px;
+background: #3498db;
+color: white;
+border: none;
+border-radius: 0 4px 4px 0;
+cursor: pointer;
+font-size: 16px;
+transition: background 0.3s;
+}
+.search-box button:hover {
+background: #2980b9;
+}
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+background: white;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+th, td {
+padding: 12px 15px;
+text-align: left;
+border-bottom: 1px solid #ddd;
+}
+th {
+background-color: #f8f9fa;
+font-weight: bold;
+}
+tr:hover {
+background-color: #f5f5f5;
+}
+.login-section, .admin-section {
+background: white;
+padding: 30px;
+border-radius: 5px;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+max-width: 500px;
+margin: 50px auto;
+}
+.form-group {
+margin-bottom: 20px;
+}
+.form-group label {
+display: block;
+margin-bottom: 8px;
+font-weight: 600;
+}
+.form-group input, .form-group select {
+width: 100%;
+padding: 10px;
+border: 1px solid #ddd;
+border-radius: 4px;
+font-size: 16px;
+}
+.btn {
+padding: 12px 20px;
+background: #3498db;
+color: white;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 16px;
+transition: background 0.3s;
+font-weight: bold;
+}
+.btn:hover {
+background: #2980b9;
+}
+.btn-danger {
+background: #e74c3c;
+}
+.btn-danger:hover {
+background: #c0392b;
+}
+.btn-success {
+background: #2ecc71;
+}
+.btn-success:hover {
+background: #27ae60;
+}
+.hidden {
+display: none;
+}
+.actions {
+display: flex;
+gap: 10px;
+}
+.pagination {
+display: flex;
+justify-content: center;
+margin-top: 20px;
+gap: 10px;
+}
+.pagination button {
+padding: 8px 12px;
+background: #f8f9fa;
+border: 1px solid #ddd;
+border-radius: 4px;
+cursor: pointer;
+}
+.pagination button.active {
+background: #3498db;
+color: white;
+border-color: #3498db;
+}
+.alert {
+padding: 15px;
+margin-bottom: 20px;
+border-radius: 4px;
+}
+.alert-success {
+background-color: #d4edda;
+color: #155724;
+border: 1px solid #c3e6cb;
+}
+.alert-danger {
+background-color: #f8d7da;
+color: #721c24;
+border: 1px solid #f5c6cb;
+}
+.modal {
+display: none;
+position: fixed;
+z-index: 1;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+background-color: #fefefe;
+margin: 10% auto;
+padding: 20px;
+border: 1px solid #ddd;
+border-radius: 5px;
+width: 80%;
+max-width: 600px;
+}
+.close {
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
+}
+.close:hover {
+color: black;
+}
+</style>
+</head>
+<body>
+<!-- Página Principal (Búsqueda) -->
+<div id="page-search" class="page">
+<header>
+<h1>Sistema de Gestión de Datos</h1>
+</header>
+<div class="container">
+<nav>
+<div>
+<a href="#" class="active" id="nav-search">Búsqueda</a>
+</div>
+<div>
+<a href="#" id="nav-login">Iniciar Sesión</a>
+</div>
+</nav>
+<section class="search-section">
+<h2>Búsqueda de Registros</h2>
+<div class="search-box">
+<input type="text" id="search-input" placeholder="Buscar por nombre, teléfono, población...">
+<button id="search-btn">Buscar</button>
+</div>
+<div class="results-container">
+<table id="results-table">
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Teléfono</th>
+<th>Email</th>
+<th>Población</th>
+<th>Unidad</th>
+</tr>
+</thead>
+<tbody id="results-body">
+<!-- Los resultados se cargarán dinámicamente aquí -->
+</tbody>
+</table>
+<div class="pagination" id="pagination">
+<!-- La paginación se generará dinámicamente -->
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Página de Login -->
+<div id="page-login" class="page hidden">
+<header>
+<h1>Sistema de Gestión de Datos</h1>
+</header>
+<div class="container">
+<nav>
+<div>
+<a href="#" id="back-to-search">← Volver a Búsqueda</a>
+</div>
+</nav>
+<section class="login-section">
+<h2>Iniciar Sesión</h2>
+<div id="login-alert" class="alert hidden"></div>
+<form id="login-form">
+<div class="form-group">
+<label for="username">Usuario:</label>
+<input type="text" id="username" required>
+</div>
+<div class="form-group">
+<label for="password">Contraseña:</label>
+<input type="password" id="password" required>
+</div>
+<button type="submit" class="btn">Iniciar Sesión</button>
+</form>
+</section>
+</div>
+</div>
+<!-- Página de Administración -->
+<div id="page-admin" class="page hidden">
+<header>
+<h1>Panel de Administración</h1>
+</header>
+<div class="container">
+<nav>
+<div>
+<a href="#" id="nav-admin-search">Búsqueda</a>
+<a href="#" class="active" id="nav-admin-manage">Gestionar Datos</a>
+</div>
+<div>
+<span id="admin-username"></span>
+<a href="#" id="nav-logout">Cerrar Sesión</a>
+</div>
+</nav>
+<div id="admin-alert" class="alert hidden"></div>
+<section class="search-section">
+<div class="d-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h2>Gestión de Registros</h2>
+<button id="add-new-btn" class="btn btn-success">Agregar Nuevo</button>
+</div>
+<div class="search-box">
+<input type="text" id="admin-search-input" placeholder="Buscar por nombre, teléfono, población...">
+<button id="admin-search-btn">Buscar</button>
+</div>
+<div class="results-container">
+<table id="admin-results-table">
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Teléfono</th>
+<th>Email</th>
+<th>Población</th>
+<th>Unidad</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="admin-results-body">
+<!-- Los resultados se cargarán dinámicamente aquí -->
+</tbody>
+</table>
+<div class="pagination" id="admin-pagination">
+<!-- La paginación se generará dinámicamente -->
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Modal para Editar/Agregar -->
+<div id="edit-modal" class="modal">
+<div class="modal-content">
+<span class="close">&times;</span>
+<h2 id="modal-title">Editar Registro</h2>
+<form id="edit-form">
+<input type="hidden" id="edit-id">
+<div class="form-group">
+<label for="edit-nombre">Nombre:</label>
+<input type="text" id="edit-nombre" required>
+</div>
+<div class="form-group">
+<label for="edit-telefono">Teléfono:</label>
+<input type="tel" id="edit-telefono" required>
+</div>
+<div class="form-group">
+<label for="edit-email">Email:</label>
+<input type="email" id="edit-email" required>
+</div>
+<div class="form-group">
+<label for="edit-poblacion">Población:</label>
+<input type="text" id="edit-poblacion" required>
+</div>
+<div class="form-group">
+<label for="edit-unidad">Unidad:</label>
+<input type="text" id="edit-unidad" required>
+</div>
+<div class="form-group">
+<label for="edit-moderador">Moderador:</label>
+<input type="text" id="edit-moderador">
+</div>
+<div class="form-group">
+<label for="edit-tel-moderador">Teléfono Moderador:</label>
+<input type="tel" id="edit-tel-moderador">
+</div>
+<div class="form-group">
+<label for="edit-arciprestazgo">Arciprestazgo:</label>
+<input type="text" id="edit-arciprestazgo">
+</div>
+<div class="form-group">
+<label for="edit-arcipreste">Arcipreste:</label>
+<input type="text" id="edit-arcipreste">
+</div>
+<div class="form-group">
+<label for="edit-tel-arcipreste">Teléfono Arcipreste:</label>
+<input type="tel" id="edit-tel-arcipreste">
+</div>
+<div class="form-group">
+<label for="edit-laico">Laico:</label>
+<input type="text" id="edit-laico">
+</div>
+<div class="form-group">
+<label for="edit-tel-laico">Teléfono Laico:</label>
+<input type="tel" id="edit-tel-laico">
+</div>
+<button type="submit" class="btn btn-success">Guardar</button>
+</form>
+</div>
+</div>
+<!-- Modal de Confirmación para Eliminar -->
+<div id="delete-modal" class="modal">
+<div class="modal-content">
+<span class="close">&times;</span>
+<h2>Confirmar Eliminación</h2>
+<p>¿Está seguro que desea eliminar este registro? Esta acción no se puede deshacer.</p>
+<input type="hidden" id="delete-id">
+<div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+<button id="cancel-delete" class="btn">Cancelar</button>
+<button id="confirm-delete" class="btn btn-danger">Eliminar</button>
+</div>
+</div>
+</div>
+<script>
+// Base de datos simulada (se reemplazaría con peticiones al servidor)
+let database = [
+{
+id: 1,
+nombre: "Parroquia San Juan",
+telefono: "912345678",
+email: "parroquia.sanjuan@ejemplo.com",
+poblacion: "Madrid",
+unidad: "Parroquia",
+moderador: "Padre Antonio García",
+telModerador: "612345678",
+arciprestazgo: "Centro",
+arcipreste: "Padre Miguel López",
+telArcipreste: "623456789",
+laico: "Juan Pérez",
+telLaico: "634567890"
+},
+{
+id: 2,
+nombre: "Parroquia Santa María",
+telefono: "913456789",
+email: "parroquia.santamaria@ejemplo.com",
+poblacion: "Barcelona",
+unidad: "Parroquia",
+moderador: "Padre José Martínez",
+telModerador: "645678901",
+arciprestazgo: "Norte",
+arcipreste: "Padre Luis Sánchez",
+telArcipreste: "656789012",
+laico: "María González",
+telLaico: "667890123"
+},
+{
+id: 3,
+nombre: "Parroquia San Pedro",
+telefono: "914567890",
+email: "parroquia.sanpedro@ejemplo.com",
+poblacion: "Valencia",
+unidad: "Parroquia",
+moderador: "Padre Francisco Rodríguez",
+telModerador: "678901234",
+arciprestazgo: "Sur",
+arcipreste: "Padre Andrés Gómez",
+telArcipreste: "689012345",
+laico: "Pedro Fernández",
+telLaico: "690123456"
+}
+];
+// Usuario administrador simulado
+const adminUser = {
+username: "admin",
+password: "admin123"
+};
+// Variables de estado
+let currentPage = 1;
+let itemsPerPage = 10;
+let currentResults = [];
+let isLoggedIn = false;
+// Elementos DOM
+const pages = {
+search: document.getElementById('page-search'),
+login: document.getElementById('page-login'),
+admin: document.getElementById('page-admin')
+};
+// Navegación
+document.getElementById('nav-login').addEventListener('click', () => showPage('login'));
+document.getElementById('back-to-search').addEventListener('click', () => showPage('search'));
+document.getElementById('nav-admin-search').addEventListener('click', () => {
+showPage('search');
+document.getElementById('nav-login').textContent = 'Admin Panel';
+document.getElementById('nav-login').addEventListener('click', () => showPage('admin'));
+});
+document.getElementById('nav-logout').addEventListener('click', logout);
+// Búsqueda
+document.getElementById('search-btn').addEventListener('click', performSearch);
+document.getElementById('admin-search-btn').addEventListener('click', performAdminSearch);
+// Formulario de login
+document.getElementById('login-form').addEventListener('submit', handleLogin);
+// Modal de edición/creación
+document.getElementById('add-new-btn').addEventListener('click', showAddNewModal);
+document.getElementById('edit-form').addEventListener('submit', handleSaveRecord);
+// Modal de eliminación
+document.getElementById('confirm-delete').addEventListener('click', handleDeleteRecord);
+document.getElementById('cancel-delete').addEventListener('click', () => hideModal('delete-modal'));
+// Cerrar modales con X
+document.querySelectorAll('.close').forEach(closeBtn => {
+closeBtn.addEventListener('click', () => {
+document.querySelectorAll('.modal').forEach(modal => {
+modal.style.display = 'none';
+});
+});
+});
+// Inicializar la aplicación
+init();
+// Funciones principales
+function init() {
+showPage('search');
+loadSearchResults(database);
+}
+function showPage(pageName) {
+Object.keys(pages).forEach(key => {
+pages[key].classList.add('hidden');
+});
+pages[pageName].classList.remove('hidden');
+if (pageName === 'admin' && !isLoggedIn) {
+showPage('login');
+return;
+}
+if (pageName === 'admin') {
+loadAdminResults(database);
+}
+}
+function performSearch() {
+const searchTerm = document.getElementById('search-input').value.toLowerCase();
+const filteredResults = database.filter(item => {
+return Object.values(item).some(value =>
+typeof value === 'string' && value.toLowerCase().includes(searchTerm)
+);
+});
+loadSearchResults(filteredResults);
+}
+function performAdminSearch() {
+const searchTerm = document.getElementById('admin-search-input').value.toLowerCase();
+const filteredResults = database.filter(item => {
+return Object.values(item).some(value =>
+typeof value === 'string' && value.toLowerCase().includes(searchTerm)
+);
+});
+loadAdminResults(filteredResults);
+}
+function loadSearchResults(results) {
+currentResults = results;
+const tbody = document.getElementById('results-body');
+tbody.innerHTML = '';
+const startIndex = (currentPage - 1) * itemsPerPage;
+const endIndex = Math.min(startIndex + itemsPerPage, results.length);
+const pageResults = results.slice(startIndex, endIndex);
+if (pageResults.length === 0) {
+const tr = document.createElement('tr');
+tr.innerHTML = '<td colspan="5" style="text-align: center;">No se encontraron resultados</td>';
+tbody.appendChild(tr);
+} else {
+pageResults.forEach(item => {
+const tr = document.createElement('tr');
+tr.innerHTML = `
+<td>${item.nombre}</td>
+<td>${item.telefono}</td>
+<td>${item.email}</td>
+<td>${item.poblacion}</td>
+<td>${item.unidad}</td>
+`;
+tbody.appendChild(tr);
+});
+}
+updatePagination(results.length, 'pagination');
+}
+function loadAdminResults(results) {
+currentResults = results;
+const tbody = document.getElementById('admin-results-body');
+tbody.innerHTML = '';
+const startIndex = (currentPage - 1) * itemsPerPage;
+const endIndex = Math.min(startIndex + itemsPerPage, results.length);
+const pageResults = results.slice(startIndex, endIndex);
+if (pageResults.length === 0) {
+const tr = document.createElement('tr');
+tr.innerHTML = '<td colspan="6" style="text-align: center;">No se encontraron resultados</td>';
+tbody.appendChild(tr);
+} else {
+pageResults.forEach(item => {
+const tr = document.createElement('tr');
+tr.innerHTML = `
+<td>${item.nombre}</td>
+<td>${item.telefono}</td>
+<td>${item.email}</td>
+<td>${item.poblacion}</td>
+<td>${item.unidad}</td>
+<td class="actions">
+<button class="btn" onclick="editRecord(${item.id})">Editar</button>
+<button class="btn btn-danger" onclick="showDeleteModal(${item.id})">Eliminar</button>
+</td>
+`;
+tbody.appendChild(tr);
+});
+}
+updatePagination(results.length, 'admin-pagination');
+}
+function updatePagination(totalItems, paginationId) {
+const totalPages = Math.ceil(totalItems / itemsPerPage);
+const pagination = document.getElementById(paginationId);
+pagination.innerHTML = '';
+if (totalPages <= 1) return;
+// Botón Anterior
+const prevBtn = document.createElement('button');
+prevBtn.textContent = '«';
+prevBtn.disabled = currentPage === 1;
+prevBtn.addEventListener('click', () => {
+if (currentPage > 1) {
+currentPage--;
+paginationId === 'pagination' ? loadSearchResults(currentResults) : loadAdminResults(currentResults);
+}
+});
+pagination.appendChild(prevBtn);
+// Números de página
+for (let i = 1; i <= totalPages; i++) {
+const pageBtn = document.createElement('button');
+pageBtn.textContent = i;
+if (i === currentPage) {
+pageBtn.classList.add('active');
+}
+pageBtn.addEventListener('click', () => {
+currentPage = i;
+paginationId === 'pagination' ? loadSearchResults(currentResults) : loadAdminResults(currentResults);
+});
+pagination.appendChild(pageBtn);
+}
+// Botón Siguiente
+const nextBtn = document.createElement('button');
+nextBtn.textContent = '»';
+nextBtn.disabled = currentPage === totalPages;
+nextBtn.addEventListener('click', () => {
+if (currentPage < totalPages) {
+currentPage++;
+paginationId === 'pagination' ? loadSearchResults(currentResults) : loadAdminResults(currentResults);
+}
+});
+pagination.appendChild(nextBtn);
+}
+function handleLogin(e) {
+e.preventDefault();
+const username = document.getElementById('username').value;
+const password = document.getElementById('password').value;
+if (username === adminUser.username && password === adminUser.password) {
+isLoggedIn = true;
+document.getElementById('admin-username').textContent = `Usuario: ${username}`;
+showPage('admin');
+} else {
+showAlert('login-alert', 'Usuario o contraseña incorrectos', 'danger');
+}
+}
+function logout() {
+isLoggedIn = false;
+document.getElementById('username').value = '';
+document.getElementById('password').value = '';
+showPage('search');
+}
+function showAlert(alertId, message, type) {
+const alert = document.getElementById(alertId);
+alert.textContent = message;
+alert.className = `alert alert-${type}`;
+alert.classList.remove('hidden');
+setTimeout(() => {
+alert.classList.add('hidden');
+}, 3000);
+}
+function showModal(modalId) {
+document.getElementById(modalId).style.display = 'block';
+}
+function hideModal(modalId) {
+document.getElementById(modalId).style.display = 'none';
+}
+function showAddNewModal() {
+document.getElementById('modal-title').textContent = 'Agregar Nuevo Registro';
+document.getElementById('edit-id').value = '';
+document.getElementById('edit-form').reset();
+showModal('edit-modal');
+}
+function editRecord(id) {
+const record = database.find(item => item.id === id);
+if (!record) return;
+document.getElementById('modal-title').textContent = 'Editar Registro';
+document.getElementById('edit-id').value = record.id;
+document.getElementById('edit-nombre').value = record.nombre;
+document.getElementById('edit-telefono').value = record.telefono;
+document.getElementById('edit-email').value = record.email;
+document.getElementById('edit-poblacion').value = record.poblacion;
+document.getElementById('edit-unidad').value = record.unidad;
+document.getElementById('edit-moderador').value = record.moderador || '';
+document.getElementById('edit-tel-moderador').value = record.telModerador || '';
+document.getElementById('edit-arciprestazgo').value = record.arciprestazgo || '';
+document.getElementById('edit-arcipreste').value = record.arcipreste || '';
+document.getElementById('edit-tel-arcipreste').value = record.telArcipreste || '';
+document.getElementById('edit-laico').value = record.laico || '';
+document.getElementById('edit-tel-laico').value = record.telLaico || '';
+showModal('edit-modal');
+}
+function handleSaveRecord(e) {
+e.preventDefault();
+const id = document.getElementById('edit-id').value;
+const newRecord = {
+nombre: document.getElementById('edit-nombre').value,
+telefono: document.getElementById('edit-telefono').value,
+email: document.getElementById('edit-email').value,
+poblacion: document.getElementById('edit-poblacion').value,
+unidad: document.getElementById('edit-unidad').value,
+moderador: document.getElementById('edit-moderador').value,
+telModerador: document.getElementById('edit-tel-moderador').value,
+arciprestazgo: document.getElementById('edit-arciprestazgo').value,
+arcipreste: document.getElementById('edit-arcipreste').value,
+telArcipreste: document.getElementById('edit-tel-arcipreste').value,
+laico: document.getElementById('edit-laico').value,
+telLaico: document.getElementById('edit-tel-laico').value
+};
+if (id) {
+// Actualizar registro existente
+const index = database.findIndex(item => item.id === parseInt(id));
+if (index !== -1) {
+newRecord.id = parseInt(id);
+database[index] = newRecord;
+showAlert('admin-alert', 'Registro actualizado correctamente', 'success');
+}
+} else {
+// Crear nuevo registro
+newRecord.id = database.length > 0 ? Math.max(...database.map(item => item.id)) + 1 : 1;
+database.push(newRecord);
+showAlert('admin-alert', 'Registro agregado correctamente', 'success');
+}
+hideModal('edit-modal');
+loadAdminResults(database);
+}
+function showDeleteModal(id) {
+document.getElementById('delete-id').value = id;
+showModal('delete-modal');
+}
+function handleDeleteRecord() {
+const id = parseInt(document.getElementById('delete-id').value);
+const index = database.findIndex(item => item.id === id);
+if (index !== -1) {
+database.splice(index, 1);
+showAlert('admin-alert', 'Registro eliminado correctamente', 'success');
+}
+hideModal('delete-modal');
+loadAdminResults(database);
+}
